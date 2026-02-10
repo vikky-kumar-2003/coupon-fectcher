@@ -103,11 +103,26 @@ def run_server(host='127.0.0.1', port=5000):
     """Run Flask server in a separate thread"""
     app.run(host=host, port=port, debug=False, use_reloader=False, threaded=True)
 
-def start_dashboard(host='127.0.0.1', port=5000):
+def start_dashboard(host=None, port=None):
     """Start the web dashboard in a background thread"""
+    # Use Railway's PORT if available, otherwise default to 5000
+    if port is None:
+        port = int(os.environ.get('PORT', 5000))
+    
+    # Use 0.0.0.0 for Railway (public access), 127.0.0.1 for local
+    if host is None:
+        host = '0.0.0.0' if os.environ.get('RAILWAY_ENVIRONMENT') else '127.0.0.1'
+    
     server_thread = threading.Thread(target=run_server, args=(host, port), daemon=True)
     server_thread.start()
-    return f"http://{host}:{port}"
+    
+    # Return appropriate URL based on environment
+    if os.environ.get('RAILWAY_ENVIRONMENT'):
+        # Railway provides RAILWAY_PUBLIC_DOMAIN or we construct from service
+        railway_domain = os.environ.get('RAILWAY_PUBLIC_DOMAIN', 'your-app.up.railway.app')
+        return f"https://{railway_domain}"
+    else:
+        return f"http://{host}:{port}"
 
 def stop_dashboard():
     """Stop the web dashboard"""
