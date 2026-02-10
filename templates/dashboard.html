@@ -23,7 +23,7 @@
 
         .container {
             display: grid;
-            grid-template-columns: 1fr 1fr;
+            grid-template-columns: 1fr;
             grid-template-rows: auto 1fr;
             gap: 20px;
             padding: 20px;
@@ -343,11 +343,6 @@
             </div>
         </div>
 
-        <div class="terminal-section">
-            <div class="section-header">📟 Live Terminal Output</div>
-            <div class="terminal" id="terminal"></div>
-        </div>
-
         <div class="right-section">
             <div class="section-header">🎟️ Extracted Coupons</div>
             <div class="coupons-container">
@@ -372,20 +367,7 @@
     </div>
 
     <script>
-        const terminal = document.getElementById('terminal');
         const couponsBody = document.getElementById('coupons-body');
-
-        // Connect to Server-Sent Events for live logs
-        const eventSource = new EventSource('/logs');
-
-        eventSource.onmessage = function (event) {
-            const log = JSON.parse(event.data);
-            const logLine = document.createElement('div');
-            logLine.className = 'log-line';
-            logLine.textContent = log.message;
-            terminal.appendChild(logLine);
-            terminal.scrollTop = terminal.scrollHeight;
-        };
 
         // Update statistics every 2 seconds
         setInterval(async () => {
